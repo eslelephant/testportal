@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Results - Speakers' Corner</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 50px 40px;
+            text-align: center;
+        }
+
+        .logo {
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            margin: 0 auto 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            font-weight: 700;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            overflow: hidden;
+            padding: 4px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo-image {
+            width: 110%;
+            height: 110%;
+            object-fit: contain;
+            border-radius: 50%;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .results-content {
+            padding: 40px;
+        }
+
+        .student-info {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .student-info h2 {
+            color: #2d3748;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        .info-label {
+            font-weight: 500;
+            color: #4a5568;
+        }
+
+        .info-value {
+            color: #2d3748;
+            font-weight: 600;
+        }
+
+        .score-section {
+            text-align: center;
+            background: #f0f4ff;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 2px solid #667eea;
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 700;
+            margin: 0 auto 20px;
+        }
+
+        .score-details {
+            font-size: 18px;
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+
+        .grade {
+            font-size: 24px;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .grade-description {
+            color: #4a5568;
+            font-size: 16px;
+        }
+
+        .detailed-results {
+            margin-bottom: 30px;
+        }
+
+        .detailed-results h3 {
+            color: #2d3748;
+            font-size: 20px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+
+        .part-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f7fafc;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .part-name {
+            font-weight: 500;
+            color: #2d3748;
+        }
+
+        .part-score {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .answer-breakdown {
+            margin-top: 30px;
+        }
+
+        .answer-breakdown h3 {
+            color: #2d3748;
+            font-size: 20px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+
+        .answer-item {
+            display: flex;
+            align-items: center;
+            background: #f7fafc;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border-left: 4px solid transparent;
+        }
+
+        .answer-item.correct {
+            border-left-color: #48bb78;
+            background: #f0fff4;
+        }
+
+        .answer-item.incorrect {
+            border-left-color: #f56565;
+            background: #fef5e7;
+        }
+
+        .question-number {
+            font-weight: 600;
+            color: #2d3748;
+            width: 80px;
+            flex-shrink: 0;
+        }
+
+        .answer-status {
+            font-size: 18px;
+            width: 30px;
+            flex-shrink: 0;
+            text-align: center;
+        }
+
+        .answer-status.correct {
+            color: #48bb78;
+        }
+
+        .answer-status.incorrect {
+            color: #f56565;
+        }
+
+        .answer-details {
+            flex: 1;
+            margin-left: 15px;
+            font-size: 14px;
+        }
+
+        .your-answer {
+            color: #2d3748;
+            margin-bottom: 4px;
+        }
+
+        .correct-answer {
+            color: #48bb78;
+            font-weight: 500;
+        }
+
+        .part-header {
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        .part-header h4 {
+            color: #2d3748;
+            font-size: 16px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+            padding: 8px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .part-container {
+            margin-bottom: 20px;
+            padding-left: 10px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .action-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .download-btn {
+            background: #48bb78;
+            color: white;
+        }
+
+        .download-btn:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(72, 187, 120, 0.3);
+        }
+
+        .home-btn {
+            background: #6c757d;
+            color: white;
+        }
+
+        .home-btn:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(108, 117, 125, 0.3);
+        }
+
+        .footer {
+            text-align: center;
+            color: #a0aec0;
+            font-size: 12px;
+            padding: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                padding: 30px 20px;
+            }
+
+            .results-content {
+                padding: 30px 20px;
+            }
+
+            .score-circle {
+                width: 100px;
+                height: 100px;
+                font-size: 28px;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .action-btn {
+                width: 100%;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .actions, .footer {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <img src="../speakerslogo.png" alt="Speakers' Corner Logo" class="logo-image">
+            </div>
+            <h1>Test Results</h1>
+            <p>B1 Reading Test - Cambridge English: Preliminary</p>
+        </div>
+
+        <div class="results-content">
+            <div class="student-info">
+                <h2>Student Information</h2>
+                <div class="info-row">
+                    <span class="info-label">Name:</span>
+                    <span class="info-value" id="studentName">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Email:</span>
+                    <span class="info-value" id="studentEmail">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Test Date:</span>
+                    <span class="info-value" id="testDate">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Test Time:</span>
+                    <span class="info-value" id="testTime">-</span>
+                </div>
+            </div>
+
+            <div class="score-section">
+                <div class="score-circle">
+                    <span id="percentage">-</span>%
+                </div>
+                <div class="score-details" id="scoreDetails">- out of 32 questions correct</div>
+                <div class="grade" id="grade">-</div>
+                <div class="grade-description" id="gradeDescription">-</div>
+            </div>
+
+            <div class="detailed-results">
+                <h3>Detailed Results by Part</h3>
+                <div class="part-summary">
+                    <span class="part-name">Part 1: Real-world notices (Questions 1-5)</span>
+                    <span class="part-score" id="part1Score">-/5</span>
+                </div>
+                <div class="part-summary">
+                    <span class="part-name">Part 2: Matching people to activities (Questions 6-10)</span>
+                    <span class="part-score" id="part2Score">-/5</span>
+                </div>
+                <div class="part-summary">
+                    <span class="part-name">Part 3: Reading comprehension (Questions 11-15)</span>
+                    <span class="part-score" id="part3Score">-/5</span>
+                </div>
+                <div class="part-summary">
+                    <span class="part-name">Part 4: Gapped text (Questions 16-20)</span>
+                    <span class="part-score" id="part4Score">-/5</span>
+                </div>
+                <div class="part-summary">
+                    <span class="part-name">Part 5: Multiple choice cloze (Questions 21-26)</span>
+                    <span class="part-score" id="part5Score">-/6</span>
+                </div>
+                <div class="part-summary">
+                    <span class="part-name">Part 6: Open cloze (Questions 27-32)</span>
+                    <span class="part-score" id="part6Score">-/6</span>
+                </div>
+            </div>
+
+            <div class="answer-breakdown">
+                <h3>Detailed Answer Review</h3>
+                <div id="answerBreakdown">
+                    <!-- Answer details will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="action-btn download-btn" onclick="downloadPDF()">Download PDF</button>
+                <a href="../index.html" class="action-btn home-btn">Take Another Test</a>
+            </div>
+            
+            <div class="loading" id="loadingMessage">Processing...</div>
+        </div>
+
+        <div class="footer">
+            Results generated by Speakers' Corner Test Portal • Cambridge English aligned
+        </div>
+    </div>
+
+    <script>
+        // Initialize EmailJS
+        (function() {
+            emailjs.init("xa3HmlpdIiKNi4p0l");
+        })();
+
+        // Load and display results
+        window.addEventListener('load', function() {
+            const results = JSON.parse(localStorage.getItem('testResults'));
+            if (!results) {
+                alert('No test results found. Please take the test first.');
+                window.location.href = '../index.html';
+                return;
+            }
+
+            displayResults(results);
+            
+            // Automatically email results - DISABLED
+            // emailResults(results);
+        });
+
+        function displayResults(results) {
+            // Student information
+            document.getElementById('studentName').textContent = results.studentName;
+            document.getElementById('studentEmail').textContent = results.studentEmail;
+            document.getElementById('testDate').textContent = results.testDate;
+            document.getElementById('testTime').textContent = results.testTime;
+
+            // Overall score
+            document.getElementById('percentage').textContent = results.percentage;
+            document.getElementById('scoreDetails').textContent = `${results.score} out of ${results.totalQuestions} questions correct`;
+
+            // Grade calculation
+            const grade = calculateGrade(results.percentage);
+            document.getElementById('grade').textContent = grade.grade;
+            document.getElementById('gradeDescription').textContent = grade.description;
+
+            // Part scores
+            const partScores = calculatePartScores(results.answers, results.correctAnswers);
+            document.getElementById('part1Score').textContent = `${partScores.part1}/5`;
+            document.getElementById('part2Score').textContent = `${partScores.part2}/5`;
+            document.getElementById('part3Score').textContent = `${partScores.part3}/5`;
+            document.getElementById('part4Score').textContent = `${partScores.part4}/5`;
+            document.getElementById('part5Score').textContent = `${partScores.part5}/6`;
+            document.getElementById('part6Score').textContent = `${partScores.part6}/6`;
+
+            // Detailed answer breakdown
+            populateAnswerBreakdown(results.answers, results.correctAnswers);
+        }
+
+        function calculateGrade(percentage) {
+            if (percentage >= 85) return { grade: 'Excellent', description: 'Outstanding performance' };
+            if (percentage >= 70) return { grade: 'Pass with Merit', description: 'Very good performance' };
+            if (percentage >= 60) return { grade: 'Pass', description: 'Good performance' };
+            if (percentage >= 45) return { grade: 'Borderline', description: 'Need improvement' };
+            return { grade: 'Below Pass', description: 'Requires significant improvement' };
+        }
+
+        function calculatePartScores(answers, correctAnswers) {
+            const parts = {
+                part1: 0, part2: 0, part3: 0, part4: 0, part5: 0, part6: 0
+            };
+
+            // Part 1: q1-q5
+            for (let i = 1; i <= 5; i++) {
+                if (answers[`q${i}`] && answers[`q${i}`].toLowerCase() === correctAnswers[`q${i}`].toLowerCase()) {
+                    parts.part1++;
+                }
+            }
+
+            // Part 2: q6-q10
+            for (let i = 6; i <= 10; i++) {
+                if (answers[`q${i}`] && answers[`q${i}`].toLowerCase() === correctAnswers[`q${i}`].toLowerCase()) {
+                    parts.part2++;
+                }
+            }
+
+            // Part 3: q11-q15
+            for (let i = 11; i <= 15; i++) {
+                if (answers[`q${i}`] && answers[`q${i}`].toLowerCase() === correctAnswers[`q${i}`].toLowerCase()) {
+                    parts.part3++;
+                }
+            }
+
+            // Part 4: q16-q20
+            for (let i = 16; i <= 20; i++) {
+                if (answers[`q${i}`] && answers[`q${i}`].toLowerCase() === correctAnswers[`q${i}`].toLowerCase()) {
+                    parts.part4++;
+                }
+            }
+
+            // Part 5: q21-q26
+            for (let i = 21; i <= 26; i++) {
+                if (answers[`q${i}`] && answers[`q${i}`].toLowerCase() === correctAnswers[`q${i}`].toLowerCase()) {
+                    parts.part5++;
+                }
+            }
+
+            // Part 6: q27-q32
+            for (let i = 27; i <= 32; i++) {
+                if (answers[`q${i}`] && answers[`q${i}`].toLowerCase() === correctAnswers[`q${i}`].toLowerCase()) {
+                    parts.part6++;
+                }
+            }
+
+            return parts;
+        }
+
+        function populateAnswerBreakdown(answers, correctAnswers) {
+            const breakdownDiv = document.getElementById('answerBreakdown');
+            breakdownDiv.innerHTML = '';
+
+            // Define test parts with their question ranges and titles
+            const testParts = [
+                { title: 'Part 1: Real-world notices', start: 1, end: 5 },
+                { title: 'Part 2: Matching people to activities', start: 6, end: 10 },
+                { title: 'Part 3: Reading comprehension', start: 11, end: 15 },
+                { title: 'Part 4: Gapped text', start: 16, end: 20 },
+                { title: 'Part 5: Multiple choice cloze', start: 21, end: 26 },
+                { title: 'Part 6: Open cloze', start: 27, end: 32 }
+            ];
+
+            testParts.forEach(part => {
+                // Create part header
+                const partHeader = document.createElement('div');
+                partHeader.className = 'part-header';
+                partHeader.innerHTML = `<h4>${part.title} (Questions ${part.start}-${part.end})</h4>`;
+                breakdownDiv.appendChild(partHeader);
+
+                // Create part container
+                const partContainer = document.createElement('div');
+                partContainer.className = 'part-container';
+
+                // Process questions for this part
+                for (let i = part.start; i <= part.end; i++) {
+                    const questionKey = `q${i}`;
+                    const userAnswer = answers[questionKey] || 'No answer';
+                    const correctAnswer = correctAnswers[questionKey];
+                    const isCorrect = userAnswer.toLowerCase() === correctAnswer.toLowerCase();
+
+                    const answerItem = document.createElement('div');
+                    answerItem.className = `answer-item ${isCorrect ? 'correct' : 'incorrect'}`;
+
+                    answerItem.innerHTML = `
+                        <div class="question-number">Q${i}:</div>
+                        <div class="answer-status ${isCorrect ? 'correct' : 'incorrect'}">
+                            ${isCorrect ? '✓' : '✗'}
+                        </div>
+                        <div class="answer-details">
+                            <div class="your-answer">Your answer: <strong>${userAnswer}</strong></div>
+                            ${!isCorrect ? `<div class="correct-answer">Correct answer: <strong>${correctAnswer}</strong></div>` : ''}
+                        </div>
+                    `;
+
+                    partContainer.appendChild(answerItem);
+                }
+
+                breakdownDiv.appendChild(partContainer);
+            });
+        }
+
+
+
+        function downloadPDF() {
+            document.getElementById('loadingMessage').style.display = 'block';
+            
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF();
+            
+            const results = JSON.parse(localStorage.getItem('testResults'));
+            
+            // Add content to PDF
+            pdf.setFontSize(20);
+            pdf.text('Speakers\' Corner - Test Results', 20, 30);
+            
+            pdf.setFontSize(16);
+            pdf.text('B1 Reading Test - Cambridge English: Preliminary', 20, 45);
+            
+            pdf.setFontSize(12);
+            pdf.text(`Student: ${results.studentName}`, 20, 65);
+            pdf.text(`Email: ${results.studentEmail}`, 20, 75);
+            pdf.text(`Test Date: ${results.testDate}`, 20, 85);
+            pdf.text(`Test Time: ${results.testTime}`, 20, 95);
+            
+            pdf.setFontSize(16);
+            pdf.text(`Score: ${results.score}/${results.totalQuestions} (${results.percentage}%)`, 20, 115);
+            
+            const grade = calculateGrade(results.percentage);
+            pdf.text(`Grade: ${grade.grade}`, 20, 130);
+            
+            // Add part scores
+            const partScores = calculatePartScores(results.answers, results.correctAnswers);
+            pdf.setFontSize(12);
+            pdf.text('Part Scores:', 20, 150);
+            pdf.text(`Part 1: ${partScores.part1}/5`, 20, 165);
+            pdf.text(`Part 2: ${partScores.part2}/5`, 20, 175);
+            pdf.text(`Part 3: ${partScores.part3}/5`, 20, 185);
+            pdf.text(`Part 4: ${partScores.part4}/5`, 20, 195);
+            pdf.text(`Part 5: ${partScores.part5}/6`, 20, 205);
+            pdf.text(`Part 6: ${partScores.part6}/6`, 20, 215);
+            
+            pdf.save(`${results.studentName}_B1_Reading_Results.pdf`);
+            
+            document.getElementById('loadingMessage').style.display = 'none';
+        }
+
+        function emailResults(results) {
+            // Show loading message
+            document.getElementById('loadingMessage').style.display = 'block';
+            document.getElementById('loadingMessage').textContent = 'Sending results via email...';
+
+            // Calculate detailed scores
+            const partScores = calculatePartScores(results.answers, results.correctAnswers);
+            const grade = calculateGrade(results.percentage);
+
+            // Prepare detailed answer breakdown
+            let detailedAnswers = '';
+            const testParts = [
+                { title: 'Part 1: Real-world notices', start: 1, end: 5 },
+                { title: 'Part 2: Matching people to activities', start: 6, end: 10 },
+                { title: 'Part 3: Reading comprehension', start: 11, end: 15 },
+                { title: 'Part 4: Gapped text', start: 16, end: 20 },
+                { title: 'Part 5: Multiple choice cloze', start: 21, end: 26 },
+                { title: 'Part 6: Open cloze', start: 27, end: 32 }
+            ];
+
+            testParts.forEach(part => {
+                detailedAnswers += `\n${part.title} (Questions ${part.start}-${part.end}):\n`;
+                detailedAnswers += '=' .repeat(50) + '\n';
+                
+                for (let i = part.start; i <= part.end; i++) {
+                    const questionKey = `q${i}`;
+                    const userAnswer = results.answers[questionKey] || 'No answer';
+                    const correctAnswer = results.correctAnswers[questionKey];
+                    const isCorrect = userAnswer.toLowerCase() === correctAnswer.toLowerCase();
+                    const status = isCorrect ? '✓ CORRECT' : '✗ INCORRECT';
+                    
+                    detailedAnswers += `Q${i}: ${status}\n`;
+                    detailedAnswers += `  Student Answer: ${userAnswer}\n`;
+                    if (!isCorrect) {
+                        detailedAnswers += `  Correct Answer: ${correctAnswer}\n`;
+                    }
+                    detailedAnswers += '\n';
+                }
+            });
+
+            // Prepare email parameters
+            const emailParams = {
+                to_email: 'adamspeakerscorner@gmail.com',
+                student_name: results.studentName,
+                student_email: results.studentEmail,
+                test_date: results.testDate,
+                test_time: results.testTime,
+                total_score: results.score,
+                total_questions: results.totalQuestions,
+                percentage: results.percentage,
+                grade: grade.grade,
+                grade_description: grade.description,
+                part1_score: partScores.part1,
+                part2_score: partScores.part2,
+                part3_score: partScores.part3,
+                part4_score: partScores.part4,
+                part5_score: partScores.part5,
+                part6_score: partScores.part6,
+                detailed_answers: detailedAnswers
+            };
+
+            // Send email using EmailJS
+            emailjs.send('service_ql5x02m', 'template_f2gcpxf', emailParams)
+                .then(function(response) {
+                    console.log('Email sent successfully:', response.status, response.text);
+                    document.getElementById('loadingMessage').style.display = 'none';
+                }, function(error) {
+                    console.error('Email failed to send:', error);
+                    document.getElementById('loadingMessage').textContent = 'Email sending failed. Results displayed locally.';
+                    setTimeout(() => {
+                        document.getElementById('loadingMessage').style.display = 'none';
+                    }, 3000);
+                });
+        }
+    </script>
+</body>
+</html>

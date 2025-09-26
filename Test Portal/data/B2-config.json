@@ -1,0 +1,29 @@
+{
+  "testInfo": {
+    "level": "B2",
+    "title": "B2 Reading Test",
+    "subtitle": "Cambridge English: First (FCE)",
+    "totalQuestions": 34,
+    "totalParts": 7,
+    "passingScore": 60
+  },
+  "parts": {
+    "1": {
+      "title": "Part 1: Multiple Choice",
+      "instructions": "You are going to read three extracts which are all concerned with the same topic. For questions 1-6, choose the answer (A, B, C or D) which you think fits best according to the text.",
+      "type": "multiple-choice",
+      "questions": {
+        "1": { "correct": "A" },
+        "2": { "correct": "B" },
+        "3": { "correct": "C" },
+        "4": { "correct": "D" },
+        "5": { "correct": "A" },
+        "6": { "correct": "B" }
+      }
+    }
+  },
+  "answerKey": {
+    "q1": "A", "q2": "B", "q3": "C", "q4": "D", "q5": "A", "q6": "B",
+    "q7": "C", "q8": "A", "q9": "D", "q10": "B", "q11": "C", "q12": "A"
+  }
+}
